@@ -4,6 +4,8 @@
 #include <QtMath>
 #include "poland.h"
 
+const double EPS = 1e-12;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -43,7 +45,7 @@ void MainWindow::buttonDraw()
 
 
 
-    double x, y;
+    float x, y;
     double xmin = -5;
     double xmax = 5;
     double ymin = -5;
@@ -60,10 +62,10 @@ void MainWindow::buttonDraw()
     int x0 = xgmin - kx*xmin;
     int y0 = ygmin - ky*ymax;
 
-    double stepx = (xmax-xmin)/(xgmax-xgmin);
+    float stepx = (xmax-xmin)/(xgmax-xgmin);
 
-   // painter.drawLine(x0-pm.width(), y0, x0+pm.width(), y0);
-   // painter.drawLine(x0, y0-pm.width(), x0, y0+pm.width());
+    painter.drawLine(x0-pm.width(), y0, x0+pm.width(), y0);
+    painter.drawLine(x0, y0-pm.width(), x0, y0+pm.width());
 
 
     QPainterPath path;
@@ -93,9 +95,14 @@ void MainWindow::buttonDraw()
         fx = "(" +fx + ")";
         funct = ff;
         funct.replace("x", fx);
+        for (int i = 0; i < funct.length(); i++) {
+            if (funct[i] == 'e') {
+                funct = "0.000000000001";
+            }
+        }
         int p = calc(funct.toStdString(), ans);
 
-        if (p==0){
+        if (p == 0){
             y = ans;
             //y = sin(x);
             xg = x0 + kx*x;
@@ -103,8 +110,9 @@ void MainWindow::buttonDraw()
             path.lineTo(xg, yg);
             x+=stepx;
         }
-        else
-            printf("%d", 7);
+        if(p!=0) {
+            x+=stepx;
+        }
     }
     pen.setWidth(3);
     pen.setBrush(Qt::red);

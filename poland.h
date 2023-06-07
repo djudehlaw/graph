@@ -135,6 +135,13 @@ int error(string s) {
             return -1;
         }
     }
+
+    /*for (int i = 0; i < s.length(); i++) {
+        if (s[i] == 'e') {
+            return -1;
+        }
+    }*/
+
     for (int i = 0; i < s.length(); i++) {
         if (s[i] == '(') {
             temp++;
@@ -205,6 +212,8 @@ int error(string s) {
 
 
 int calc(string s, double &ans) {
+    top1 = nullptr;
+    top2 = nullptr;
     string  ss;
     pr = 0;
     if (s[0] == '-') {
@@ -231,7 +240,6 @@ int calc(string s, double &ans) {
     }
 
      for (int i = 0; i < s.length(); i++) {
-
         if (s[i] >= '0' && s[i] <= '9' ) {
             int dot = 1;
             double temp = 0;
@@ -250,13 +258,17 @@ int calc(string s, double &ans) {
             }
             i--;
             push(top1, temp, '@');
+            temp = 0;
         }
         if (s[i] == '(') {
             push(top2, 0.0, s[i]);
         }
         if (s[i] == ')') {
             while ((*top2).znak != '(') {
-                apply(pop(top2).znak);
+                pr = apply(pop(top2).znak);
+                if (pr == -1) {
+                    return -1;
+                }
             }
             pop(top2);
         }
@@ -279,5 +291,13 @@ int calc(string s, double &ans) {
         }
     }
     ans = pop(top1).number;
+    printf("    %f \n", ans);
+    while (top2 != nullptr) {
+        pop(top2);
+    }
+    while (top1 != nullptr) {
+        pop(top1);
+    }
+
     return 0;
 }
